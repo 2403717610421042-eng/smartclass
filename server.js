@@ -1,32 +1,42 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const path = require("path");
 const { createClient } = require("@supabase/supabase-js");
 
 dotenv.config();
 
 const app = express();
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Serve index.html, admin.html, style.css, script.js, admin.js
+// IMPORTANT: serve static files (HTML, CSS, JS)
 app.use(express.static(__dirname));
 
-// Supabase Connection
+// Supabase connection
 const supabase = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_KEY
 );
 
-// Home Page
+const PORT = process.env.PORT || 3000;
+
+/* ---------------- ROUTES ---------------- */
+
+// Home page
 app.get("/", (req, res) => {
-    res.sendFile(__dirname + "/index.html");
+    res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// Get All Seats
-app.get("/seats", async (req, res) => {
+// Admin page
+app.get("/admin.html", (req, res) => {
+    res.sendFile(path.join(__dirname, "admin.html"));
+});
 
+// Get all seats
+app.get("/seats", async (req, res) => {
     const { data, error } = await supabase
         .from("seats")
         .select("*")
@@ -39,16 +49,13 @@ app.get("/seats", async (req, res) => {
     res.json(data);
 });
 
-// Book Seat
+// Book seat
 app.post("/book/:id", async (req, res) => {
-
     const id = req.params.id;
 
     const { error } = await supabase
         .from("seats")
-        .update({
-            status: "Booked"
-        })
+        .update({ status: "Booked" })
         .eq("id", id);
 
     if (error) {
@@ -61,16 +68,13 @@ app.post("/book/:id", async (req, res) => {
     });
 });
 
-// Reset Seat (Admin)
+// Reset seat
 app.post("/reset/:id", async (req, res) => {
-
     const id = req.params.id;
 
     const { error } = await supabase
         .from("seats")
-        .update({
-            status: "Available"
-        })
+        .update({ status: "Available" })
         .eq("id", id);
 
     if (error) {
@@ -83,17 +87,8 @@ app.post("/reset/:id", async (req, res) => {
     });
 });
 
-// Start Server
-const PORT = process.env.PORT || 3000;
-const path = require("path");
+/* ---------------- START SERVER ---------------- */
 
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "index.html"));
-});
-
-app.get("/admin.html", (req, res) => {
-    res.sendFile(path.join(__dirname, "admin.html"));
-});
 app.listen(PORT, () => {
     console.log(`Server Running on Port ${PORT}`);
 });
