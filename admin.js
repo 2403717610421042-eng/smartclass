@@ -22,10 +22,10 @@ async function loadSeats() {
     });
 }
 
-async function resetSeat(id){
+async function resetSeat(id) {
 
-    await fetch(`/reset/${id}`,{
-        method:"POST"
+    await fetch(`/reset/${id}`, {
+        method: "POST"
     });
 
     loadSeats();
