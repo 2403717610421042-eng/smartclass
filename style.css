@@ -1,0 +1,29 @@
+body{
+    font-family: Arial;
+    text-align:center;
+}
+
+#seatContainer{
+    display:flex;
+    flex-wrap:wrap;
+    width:400px;
+    margin:auto;
+}
+
+.seat{
+    width:80px;
+    height:80px;
+    margin:10px;
+    color:white;
+    border:none;
+    cursor:pointer;
+    font-size:18px;
+}
+
+.available{
+    background:green;
+}
+
+.booked{
+    background:red;
+}

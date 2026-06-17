@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Classroom Seat Booking</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Smart Classroom Seat Booking System</h1>
+
+<div id="seatContainer"></div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
