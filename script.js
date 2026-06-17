@@ -1,41 +1,51 @@
 async function loadSeats() {
+    try {
+        const response = await fetch("/seats");
+        const seats = await response.json();
 
-    const response = await fetch("/seats");
-    const seats = await response.json();
+        const container = document.getElementById("seatContainer");
 
-    const container = document.getElementById("seatContainer");
+        container.innerHTML = "";
 
-    container.innerHTML = "";
+        seats.forEach(seat => {
 
-    seats.forEach(seat => {
+            const btn = document.createElement("button");
 
-        const btn = document.createElement("button");
+            btn.innerText = seat.seat_number;
 
-        btn.innerText = seat.seat_number;
+            btn.style.width = "80px";
+            btn.style.height = "80px";
+            btn.style.margin = "10px";
+            btn.style.fontSize = "18px";
+            btn.style.color = "white";
+            btn.style.border = "none";
+            btn.style.borderRadius = "8px";
 
-        btn.classList.add("seat");
+            if (seat.status === "Available") {
 
-        if(seat.status === "Available"){
+                btn.style.backgroundColor = "green";
 
-            btn.classList.add("available");
+                btn.onclick = async () => {
 
-            btn.onclick = async () => {
+                    await fetch(`/book/${seat.id}`, {
+                        method: "POST"
+                    });
 
-                await fetch(`/book/${seat.id}`, {
-                    method: "POST"
-                });
+                    loadSeats();
+                };
 
-                loadSeats();
-            };
+            } else {
 
-        }
-        else{
-            btn.classList.add("booked");
-            btn.disabled = true;
-        }
+                btn.style.backgroundColor = "red";
+                btn.disabled = true;
+            }
 
-        container.appendChild(btn);
-    });
+            container.appendChild(btn);
+        });
+
+    } catch (err) {
+        console.error(err);
+    }
 }
 
 loadSeats();
