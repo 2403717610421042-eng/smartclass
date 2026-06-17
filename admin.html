@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Admin Dashboard - Smart Classroom</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <h1>🎓 Admin Dashboard</h1>
+    <h1>🎓 Smart Classroom Seat Booking System</h1>
+
+    <h2>Admin Dashboard</h2>
 
     <nav>
         <a href="index.html">Student Page</a> |
@@ -30,10 +32,48 @@
             </tr>
         </thead>
 
-        <tbody id="seatTable"></tbody>
+        <tbody id="seatTable">
+        </tbody>
     </table>
 
-    <script src="admin.js"></script>
+    <script>
+        async function loadSeats() {
+
+            const response = await fetch("/seats");
+            const seats = await response.json();
+
+            const table = document.getElementById("seatTable");
+
+            table.innerHTML = "";
+
+            seats.forEach(seat => {
+
+                table.innerHTML += `
+                <tr>
+                    <td>${seat.seat_number}</td>
+                    <td>${seat.status}</td>
+                    <td>
+                        <button onclick="resetSeat(${seat.id})">
+                            Reset
+                        </button>
+                    </td>
+                </tr>`;
+            });
+        }
+
+        async function resetSeat(id) {
+
+            await fetch(`/reset/${id}`, {
+                method: "POST"
+            });
+
+            alert("Seat Reset Successfully");
+
+            loadSeats();
+        }
+
+        loadSeats();
+    </script>
 
 </body>
 </html>
