@@ -1,32 +1,137 @@
-<input
-    type="text"
-    id="searchBooking"
-    placeholder="🔍 Search by name, email or seat"
->
+<!DOCTYPE html>
+<html lang="en">
 
-<button onclick="loadBookings()">
-    🔄 Refresh
-</button>
+<head>
 
-<table>
+    <meta charset="UTF-8">
 
-    <thead>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-        <tr>
-            <th>Student</th>
-            <th>Email</th>
-            <th>Seat</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Action</th>
-        </tr>
+    <title>SmartClass | My Bookings</title>
 
-    </thead>
+    <link rel="stylesheet"
+          href="style.css">
 
-    <tbody id="bookingTable"></tbody>
+</head>
 
-</table>
+<body>
+
+
+<header class="navbar">
+
+    <div class="logo">
+        🎓 SmartClass
+    </div>
+
+    <nav class="nav-links">
+
+        <a href="index.html">Home</a>
+
+        <a href="booking.html">
+            💺 Book Seat
+        </a>
+
+        <a href="history.html"
+           class="active">
+            📋 My Bookings
+        </a>
+
+        <a href="profile.html">
+            👤 Profile
+        </a>
+
+        <a href="admin.html">
+            🧑‍💼 Admin
+        </a>
+
+    </nav>
+
+</header>
+
+
+<div class="container">
+
+    <div class="page-header">
+
+        <div class="mini">
+            BOOKING HISTORY
+        </div>
+
+        <h1>
+            My Bookings
+        </h1>
+
+        <p>
+            View and manage classroom seat reservations.
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="controls">
+
+            <input
+                type="text"
+                id="searchBooking"
+                class="search"
+                placeholder="🔍 Search by name, email or seat"
+            >
+
+            <button
+                class="btn btn-purple"
+                onclick="loadBookings()">
+
+                🔄 Refresh
+
+            </button>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Student</th>
+
+                        <th>Email</th>
+
+                        <th>Seat</th>
+
+                        <th>Date</th>
+
+                        <th>Status</th>
+
+                        <th>Action</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="bookingTable">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
 
 <div id="toast"></div>
 
+
 <script src="history.js"></script>
+
+</body>
+</html>
