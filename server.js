@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const path = require("path");
+
 const { createClient } = require("@supabase/supabase-js");
 
 dotenv.config();
@@ -10,397 +11,411 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname));
+
+app.use(express.static(path.join(__dirname, "public")));
 
 const supabase = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_KEY
 );
 
-const PORT = process.env.PORT || 3000;
 
-
-// ==========================================
-// HOME PAGE
-// ==========================================
+// ================= HOME =================
 
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "index.html"));
+    res.sendFile(
+        path.join(__dirname, "public", "index.html")
+    );
 });
 
 
-// ==========================================
-// ADMIN PAGE
-// ==========================================
+// ================= GET SEATS =================
 
-app.get("/admin.html", (req, res) => {
-    res.sendFile(path.join(__dirname, "admin.html"));
-});
+app.get("/api/seats", async (req, res) => {
 
+    try {
 
-// ==========================================
-// HISTORY PAGE
-// ==========================================
+        const { data, error } = await supabase
+            .from("seats")
+            .select("*")
+            .order("id", { ascending: true });
 
-app.get("/history.html", (req, res) => {
-    res.sendFile(path.join(__dirname, "history.html"));
-});
+        if (error) {
+            throw error;
+        }
 
+        res.json(data);
 
-// ==========================================
-// GET ALL SEATS
-// ==========================================
+    } catch (error) {
 
-app.get("/seats", async (req, res) => {
-
-    const { data, error } = await supabase
-        .from("seats")
-        .select("*")
-        .order("id");
-
-    if (error) {
         console.error(error);
-        return res.status(500).json({
-            success: false,
+
+        res.status(500).json({
             message: "Unable to load seats"
         });
-    }
 
-    res.json(data);
+    }
 });
 
 
-// ==========================================
-// GET STATISTICS
-// ==========================================
+// ================= STATISTICS =================
 
-app.get("/stats", async (req, res) => {
+app.get("/api/stats", async (req, res) => {
 
-    const { data, error } = await supabase
-        .from("seats")
-        .select("status");
+    try {
 
-    if (error) {
-        return res.status(500).json({
-            success: false,
-            message: "Unable to get statistics"
+        const { data, error } = await supabase
+            .from("seats")
+            .select("status");
+
+        if (error) {
+            throw error;
+        }
+
+        const total = data.length;
+
+        const available = data.filter(
+            seat => seat.status === "Available"
+        ).length;
+
+        const booked = data.filter(
+            seat => seat.status === "Booked"
+        ).length;
+
+        res.json({
+            total,
+            available,
+            booked
         });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            message: "Unable to load statistics"
+        });
+
     }
-
-    const total = data.length;
-
-    const available = data.filter(
-        seat => seat.status === "Available"
-    ).length;
-
-    const booked = data.filter(
-        seat => seat.status === "Booked"
-    ).length;
-
-    res.json({
-        total,
-        available,
-        booked
-    });
 });
 
 
-// ==========================================
-// BOOK SEAT
-// ==========================================
+// ================= BOOK SEAT =================
 
-app.post("/book/:id", async (req, res) => {
+app.post("/api/book/:id", async (req, res) => {
 
-    const id = req.params.id;
+    try {
 
-    const {
-        student_name,
-        student_email
-    } = req.body;
+        const seatId = req.params.id;
 
-    if (!student_name || !student_email) {
-        return res.status(400).json({
-            success: false,
-            message: "Student name and email are required"
+        const {
+            student_name,
+            student_email,
+            department,
+            year
+        } = req.body;
+
+
+        if (!student_name || !student_email) {
+
+            return res.status(400).json({
+                message: "Name and email are required"
+            });
+
+        }
+
+
+        // Check seat
+
+        const { data: seat, error: seatError } =
+            await supabase
+                .from("seats")
+                .select("*")
+                .eq("id", seatId)
+                .single();
+
+
+        if (seatError || !seat) {
+
+            return res.status(404).json({
+                message: "Seat not found"
+            });
+
+        }
+
+
+        if (seat.status !== "Available") {
+
+            return res.status(400).json({
+                message: "Seat is already booked"
+            });
+
+        }
+
+
+        // Update seat
+
+        const { error: updateError } =
+            await supabase
+                .from("seats")
+                .update({
+                    status: "Booked"
+                })
+                .eq("id", seatId);
+
+
+        if (updateError) {
+            throw updateError;
+        }
+
+
+        // Create booking
+
+        const { data: booking, error: bookingError } =
+            await supabase
+                .from("bookings")
+                .insert([
+                    {
+                        seat_id: seatId,
+                        student_name,
+                        student_email,
+                        department,
+                        year,
+                        status: "Booked"
+                    }
+                ])
+                .select()
+                .single();
+
+
+        if (bookingError) {
+
+            await supabase
+                .from("seats")
+                .update({
+                    status: "Available"
+                })
+                .eq("id", seatId);
+
+            throw bookingError;
+        }
+
+
+        res.json({
+            message: "Booking successful",
+            booking
         });
-    }
 
 
-    // Check seat
-    const { data: seat, error: seatError } = await supabase
-        .from("seats")
-        .select("*")
-        .eq("id", id)
-        .single();
+    } catch (error) {
 
-    if (seatError || !seat) {
-        return res.status(404).json({
-            success: false,
-            message: "Seat not found"
+        console.error(error);
+
+        res.status(500).json({
+            message: "Booking failed"
         });
+
     }
+});
 
 
-    if (seat.status === "Booked") {
-        return res.status(400).json({
-            success: false,
-            message: "This seat is already booked"
+// ================= ALL BOOKINGS =================
+
+app.get("/api/bookings", async (req, res) => {
+
+    try {
+
+        const { data, error } =
+            await supabase
+                .from("bookings")
+                .select(`
+                    *,
+                    seats (
+                        seat_number
+                    )
+                `)
+                .order(
+                    "booking_date",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        if (error) {
+            throw error;
+        }
+
+        res.json(data);
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            message: "Unable to load bookings"
         });
+
     }
+});
 
 
-    // Update seat
-    const { data: updatedSeat, error: updateError } = await supabase
-        .from("seats")
-        .update({
-            status: "Booked"
-        })
-        .eq("id", id)
-        .eq("status", "Available")
-        .select()
-        .single();
+// ================= CANCEL BOOKING =================
 
-    if (updateError || !updatedSeat) {
-        return res.status(400).json({
-            success: false,
-            message: "Seat could not be booked"
-        });
-    }
+app.post("/api/cancel/:id", async (req, res) => {
+
+    try {
+
+        const bookingId = req.params.id;
 
 
-    // Insert booking
-    const { data: booking, error: bookingError } = await supabase
-        .from("bookings")
-        .insert([
-            {
-                seat_id: id,
-                student_name: student_name,
-                student_email: student_email,
-                status: "Booked"
-            }
-        ])
-        .select()
-        .single();
+        const { data: booking, error } =
+            await supabase
+                .from("bookings")
+                .select("*")
+                .eq("id", bookingId)
+                .single();
 
 
-    if (bookingError) {
+        if (error || !booking) {
 
-        // Roll back seat if booking failed
+            return res.status(404).json({
+                message: "Booking not found"
+            });
+
+        }
+
+
+        // Make seat available
+
         await supabase
             .from("seats")
             .update({
                 status: "Available"
             })
-            .eq("id", id);
-
-        return res.status(500).json({
-            success: false,
-            message: "Booking could not be created"
-        });
-    }
+            .eq("id", booking.seat_id);
 
 
-    res.json({
-        success: true,
-        message: "Seat booked successfully",
-        booking: booking
-    });
-});
+        // Cancel booking
+
+        await supabase
+            .from("bookings")
+            .update({
+                status: "Cancelled"
+            })
+            .eq("id", bookingId);
 
 
-// ==========================================
-// GET BOOKINGS
-// ==========================================
-
-app.get("/bookings", async (req, res) => {
-
-    const { data, error } = await supabase
-        .from("bookings")
-        .select(`
-            id,
-            student_name,
-            student_email,
-            booking_date,
-            status,
-            seat_id,
-            seats (
-                seat_number
-            )
-        `)
-        .order("booking_date", {
-            ascending: false
+        res.json({
+            message: "Booking cancelled successfully"
         });
 
-    if (error) {
+
+    } catch (error) {
 
         console.error(error);
 
-        return res.status(500).json({
-            success: false,
-            message: "Unable to load bookings"
-        });
-    }
-
-    res.json(data);
-});
-
-
-// ==========================================
-// CANCEL BOOKING
-// ==========================================
-
-app.post("/cancel/:id", async (req, res) => {
-
-    const bookingId = req.params.id;
-
-
-    const { data: booking, error: bookingError } = await supabase
-        .from("bookings")
-        .select("*")
-        .eq("id", bookingId)
-        .single();
-
-
-    if (bookingError || !booking) {
-
-        return res.status(404).json({
-            success: false,
-            message: "Booking not found"
-        });
-    }
-
-
-    // Make seat available
-    const { error: seatError } = await supabase
-        .from("seats")
-        .update({
-            status: "Available"
-        })
-        .eq("id", booking.seat_id);
-
-
-    if (seatError) {
-
-        return res.status(500).json({
-            success: false,
-            message: "Unable to release seat"
-        });
-    }
-
-
-    // Update booking status
-    const { error: updateError } = await supabase
-        .from("bookings")
-        .update({
-            status: "Cancelled"
-        })
-        .eq("id", bookingId);
-
-
-    if (updateError) {
-
-        return res.status(500).json({
-            success: false,
+        res.status(500).json({
             message: "Unable to cancel booking"
         });
+
     }
-
-
-    res.json({
-        success: true,
-        message: "Booking cancelled successfully"
-    });
 });
 
 
-// ==========================================
-// RESET ONE SEAT
-// ==========================================
+// ================= RESET SEAT =================
 
-app.post("/reset/:id", async (req, res) => {
+app.post("/api/reset/:id", async (req, res) => {
 
-    const id = req.params.id;
+    try {
 
-
-    const { error } = await supabase
-        .from("seats")
-        .update({
-            status: "Available"
-        })
-        .eq("id", id);
+        const seatId = req.params.id;
 
 
-    if (error) {
+        await supabase
+            .from("seats")
+            .update({
+                status: "Available"
+            })
+            .eq("id", seatId);
 
-        return res.status(500).json({
-            success: false,
+
+        await supabase
+            .from("bookings")
+            .update({
+                status: "Cancelled"
+            })
+            .eq("seat_id", seatId)
+            .eq("status", "Booked");
+
+
+        res.json({
+            message: "Seat reset successfully"
+        });
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
             message: "Unable to reset seat"
         });
+
     }
-
-
-    // Cancel active booking for this seat
-    await supabase
-        .from("bookings")
-        .update({
-            status: "Cancelled"
-        })
-        .eq("seat_id", id)
-        .eq("status", "Booked");
-
-
-    res.json({
-        success: true,
-        message: "Seat reset successfully"
-    });
 });
 
 
-// ==========================================
-// RESET ALL SEATS
-// ==========================================
+// ================= RESET ALL =================
 
-app.post("/reset-all", async (req, res) => {
+app.post("/api/reset-all", async (req, res) => {
 
-    const { error } = await supabase
-        .from("seats")
-        .update({
-            status: "Available"
-        })
-        .neq("id", 0);
+    try {
+
+        await supabase
+            .from("seats")
+            .update({
+                status: "Available"
+            })
+            .neq("id", 0);
 
 
-    if (error) {
+        await supabase
+            .from("bookings")
+            .update({
+                status: "Cancelled"
+            })
+            .eq("status", "Booked");
 
-        return res.status(500).json({
-            success: false,
+
+        res.json({
+            message: "All seats reset successfully"
+        });
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
             message: "Unable to reset seats"
         });
+
     }
-
-
-    await supabase
-        .from("bookings")
-        .update({
-            status: "Cancelled"
-        })
-        .eq("status", "Booked");
-
-
-    res.json({
-        success: true,
-        message: "All seats reset successfully"
-    });
 });
 
 
-// ==========================================
-// START SERVER
-// ==========================================
+// ================= SERVER =================
+
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
+
+    console.log("");
     console.log("======================================");
-    console.log(" Smart Classroom Seat Booking System");
+    console.log("   SMART CLASSROOM SEAT BOOKING");
     console.log("======================================");
-    console.log(`Server running on port ${PORT}`);
+    console.log(`   Server: http://localhost:${PORT}`);
+    console.log("======================================");
+
 });
