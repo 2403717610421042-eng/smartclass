@@ -1,36 +1,216 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Smart Classroom Seat Booking System</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-    <h1>🎓 Smart Classroom Seat Booking System</h1>
+<header>
 
-    <nav>
-        <a href="index.html">Student Page</a> |
-        <a href="admin.html">Admin Dashboard</a>
-    </nav>
-
-    <br>
-
-    <h2>Classroom Seat Layout</h2>
-
-    <div id="seatContainer"></div>
-
-    <br>
-
-    <div>
-        <p>
-            🟩 Available &nbsp;&nbsp;&nbsp;
-            🟥 Booked
-        </p>
+    <div class="logo">
+        🎓 Smart Classroom
     </div>
 
-    <script src="script.js"></script>
+    <nav>
+        <a href="index.html" class="active">Student</a>
+        <a href="history.html">My Bookings</a>
+        <a href="admin.html">Admin</a>
+    </nav>
+
+</header>
+
+
+<main>
+
+    <section class="hero">
+
+        <h1>Smart Classroom Seat Booking System</h1>
+
+        <p>
+            Select your preferred classroom seat and book it easily.
+        </p>
+
+    </section>
+
+
+    <!-- STATISTICS -->
+
+    <section class="stats">
+
+        <div class="stat-card">
+            <div class="stat-icon">💺</div>
+            <h3>Total Seats</h3>
+            <span id="totalSeats">0</span>
+        </div>
+
+
+        <div class="stat-card available-card">
+            <div class="stat-icon">🟩</div>
+            <h3>Available</h3>
+            <span id="availableSeats">0</span>
+        </div>
+
+
+        <div class="stat-card booked-card">
+            <div class="stat-icon">🟥</div>
+            <h3>Booked</h3>
+            <span id="bookedSeats">0</span>
+        </div>
+
+    </section>
+
+
+    <!-- SEARCH -->
+
+    <section class="controls">
+
+        <input
+            type="text"
+            id="searchSeat"
+            placeholder="🔍 Search seat e.g. A1"
+        >
+
+        <select id="filterSeat">
+
+            <option value="all">
+                All Seats
+            </option>
+
+            <option value="Available">
+                Available
+            </option>
+
+            <option value="Booked">
+                Booked
+            </option>
+
+        </select>
+
+        <button onclick="loadSeats()">
+            🔄 Refresh
+        </button>
+
+    </section>
+
+
+    <!-- CLASSROOM -->
+
+    <section class="classroom">
+
+        <div class="board">
+            🖥️ SMART CLASSROOM BOARD
+        </div>
+
+
+        <div class="teacher-area">
+            👨‍🏫 Teacher Desk
+        </div>
+
+
+        <div id="seatContainer" class="seat-container">
+        </div>
+
+
+        <div class="legend">
+
+            <div>
+                <span class="legend-box available"></span>
+                Available
+            </div>
+
+            <div>
+                <span class="legend-box booked"></span>
+                Booked
+            </div>
+
+            <div>
+                <span class="legend-box selected"></span>
+                Selected
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- BOOKING PANEL -->
+
+    <section
+        id="bookingPanel"
+        class="booking-panel hidden"
+    >
+
+        <h2>📋 Booking Details</h2>
+
+        <p>
+            Selected Seat:
+            <strong id="selectedSeat">
+                -
+            </strong>
+        </p>
+
+
+        <input
+            type="text"
+            id="studentName"
+            placeholder="Enter Student Name"
+        >
+
+
+        <input
+            type="email"
+            id="studentEmail"
+            placeholder="Enter Student Email"
+        >
+
+
+        <div class="booking-buttons">
+
+            <button
+                class="primary-btn"
+                onclick="confirmBooking()"
+            >
+                ✅ Confirm Booking
+            </button>
+
+
+            <button
+                class="cancel-btn"
+                onclick="cancelSelection()"
+            >
+                Cancel
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- TOAST -->
+
+    <div id="toast"></div>
+
+</main>
+
+
+<footer>
+
+    <p>
+        © 2026 Smart Classroom Seat Booking System
+    </p>
+
+</footer>
+
+
+<script src="script.js"></script>
 
 </body>
+
 </html>
