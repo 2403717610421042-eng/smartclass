@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SmartClass | Seat Status</title>
+
+    <link rel="stylesheet"
+          href="style.css">
+
+</head>
+
+<body>
+
+
+<header class="navbar">
+
+    <div class="logo">
+        🎓 SmartClass
+    </div>
+
+    <nav class="nav-links">
+
+        <a href="index.html">
+            Home
+        </a>
+
+        <a href="booking.html">
+            💺 Book Seat
+        </a>
+
+        <a href="history.html">
+            📋 My Bookings
+        </a>
+
+        <a href="profile.html">
+            👤 Profile
+        </a>
+
+        <a href="admin.html">
+            🧑‍💼 Admin
+        </a>
+
+    </nav>
+
+</header>
+
+
+<div class="container">
+
+
+    <div class="page-header">
+
+        <div class="mini">
+            LIVE CLASSROOM
+        </div>
+
+        <h1>
+            Seat Availability
+        </h1>
+
+        <p>
+            View the current status of every classroom seat.
+        </p>
+
+    </div>
+
+
+    <div class="stats">
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🪑
+            </div>
+
+            <div>
+                <h3>Total</h3>
+                <p id="total">0</p>
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🟢
+            </div>
+
+            <div>
+                <h3>Available</h3>
+                <p id="available">0</p>
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🔴
+            </div>
+
+            <div>
+                <h3>Booked</h3>
+                <p id="booked">0</p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="board">
+            🖥️ SMART CLASSROOM BOARD
+        </div>
+
+        <div class="teacher">
+            👨‍🏫 Teacher Desk
+        </div>
+
+
+        <div
+            id="seatContainer"
+            class="seats">
+        </div>
+
+
+        <div class="legend">
+
+            <div>
+                <span class="green"></span>
+                Available
+            </div>
+
+            <div>
+                <span class="red"></span>
+                Booked
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="seats.js"></script>
+
+</body>
+</html>
