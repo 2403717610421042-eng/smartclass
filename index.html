@@ -2,215 +2,245 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Smart Classroom Seat Booking System</title>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SmartClass | Home</title>
 
     <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
-<header>
+
+<header class="navbar">
 
     <div class="logo">
-        🎓 Smart Classroom
+        🎓 SmartClass
     </div>
 
-    <nav>
-        <a href="index.html" class="active">Student</a>
-        <a href="history.html">My Bookings</a>
-        <a href="admin.html">Admin</a>
+    <nav class="nav-links">
+
+        <a href="index.html"
+           class="active">
+            Home
+        </a>
+
+        <a href="booking.html">
+            💺 Book Seat
+        </a>
+
+        <a href="history.html">
+            📋 My Bookings
+        </a>
+
+        <a href="profile.html">
+            👤 Profile
+        </a>
+
+        <a href="admin.html">
+            🧑‍💼 Admin
+        </a>
+
     </nav>
 
 </header>
 
 
-<main>
+<section class="hero">
 
-    <section class="hero">
+    <div>
 
-        <h1>Smart Classroom Seat Booking System</h1>
+        <div class="badge">
+            ✨ SMART CLASSROOM MANAGEMENT
+        </div>
+
+        <h1>
+            Smart Classroom
+            <span>Seat Booking System</span>
+        </h1>
 
         <p>
-            Select your preferred classroom seat and book it easily.
+            A modern classroom seat reservation system
+            that helps students select and reserve their
+            preferred seats quickly and easily.
         </p>
 
-    </section>
+        <a href="booking.html"
+           class="btn btn-primary">
+            💺 Book Your Seat
+        </a>
+
+        <a href="seats.html"
+           class="btn btn-purple">
+            📊 View Seat Status
+        </a>
+
+    </div>
+
+</section>
 
 
-    <!-- STATISTICS -->
+<div class="container">
 
-    <section class="stats">
+    <div class="stats">
 
         <div class="stat-card">
-            <div class="stat-icon">💺</div>
-            <h3>Total Seats</h3>
-            <span id="totalSeats">0</span>
-        </div>
 
-
-        <div class="stat-card available-card">
-            <div class="stat-icon">🟩</div>
-            <h3>Available</h3>
-            <span id="availableSeats">0</span>
-        </div>
-
-
-        <div class="stat-card booked-card">
-            <div class="stat-icon">🟥</div>
-            <h3>Booked</h3>
-            <span id="bookedSeats">0</span>
-        </div>
-
-    </section>
-
-
-    <!-- SEARCH -->
-
-    <section class="controls">
-
-        <input
-            type="text"
-            id="searchSeat"
-            placeholder="🔍 Search seat e.g. A1"
-        >
-
-        <select id="filterSeat">
-
-            <option value="all">
-                All Seats
-            </option>
-
-            <option value="Available">
-                Available
-            </option>
-
-            <option value="Booked">
-                Booked
-            </option>
-
-        </select>
-
-        <button onclick="loadSeats()">
-            🔄 Refresh
-        </button>
-
-    </section>
-
-
-    <!-- CLASSROOM -->
-
-    <section class="classroom">
-
-        <div class="board">
-            🖥️ SMART CLASSROOM BOARD
-        </div>
-
-
-        <div class="teacher-area">
-            👨‍🏫 Teacher Desk
-        </div>
-
-
-        <div id="seatContainer" class="seat-container">
-        </div>
-
-
-        <div class="legend">
-
-            <div>
-                <span class="legend-box available"></span>
-                Available
+            <div class="stat-icon">
+                🪑
             </div>
 
             <div>
-                <span class="legend-box booked"></span>
-                Booked
-            </div>
-
-            <div>
-                <span class="legend-box selected"></span>
-                Selected
+                <h3>Total Seats</h3>
+                <p id="total">0</p>
             </div>
 
         </div>
 
-    </section>
 
+        <div class="stat-card">
 
-    <!-- BOOKING PANEL -->
+            <div class="stat-icon">
+                🟢
+            </div>
 
-    <section
-        id="bookingPanel"
-        class="booking-panel hidden"
-    >
-
-        <h2>📋 Booking Details</h2>
-
-        <p>
-            Selected Seat:
-            <strong id="selectedSeat">
-                -
-            </strong>
-        </p>
-
-
-        <input
-            type="text"
-            id="studentName"
-            placeholder="Enter Student Name"
-        >
-
-
-        <input
-            type="email"
-            id="studentEmail"
-            placeholder="Enter Student Email"
-        >
-
-
-        <div class="booking-buttons">
-
-            <button
-                class="primary-btn"
-                onclick="confirmBooking()"
-            >
-                ✅ Confirm Booking
-            </button>
-
-
-            <button
-                class="cancel-btn"
-                onclick="cancelSelection()"
-            >
-                Cancel
-            </button>
+            <div>
+                <h3>Available</h3>
+                <p id="available">0</p>
+            </div>
 
         </div>
 
-    </section>
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🔴
+            </div>
+
+            <div>
+                <h3>Booked</h3>
+                <p id="booked">0</p>
+            </div>
+
+        </div>
+
+    </div>
 
 
-    <!-- TOAST -->
+    <div class="card">
 
-    <div id="toast"></div>
+        <div class="page-header">
 
-</main>
+            <div class="mini">
+                WHY SMARTCLASS?
+            </div>
+
+            <h1>
+                Simple. Smart. Organized.
+            </h1>
+
+            <p>
+                Everything you need for classroom
+                seat management in one place.
+            </p>
+
+        </div>
+
+
+        <div class="stats">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    ⚡
+                </div>
+
+                <div>
+                    <h3>Fast Booking</h3>
+                    <p>01</p>
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🔒
+                </div>
+
+                <div>
+                    <h3>Secure Records</h3>
+                    <p>02</p>
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    📱
+                </div>
+
+                <div>
+                    <h3>Responsive</h3>
+                    <p>03</p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 
 <footer>
 
+    <strong>🎓 SmartClass</strong>
+
     <p>
-        © 2026 Smart Classroom Seat Booking System
+        Smart Classroom Seat Booking System
+    </p>
+
+    <p>
+        © 2026 SmartClass
     </p>
 
 </footer>
 
 
-<script src="script.js"></script>
+<script>
+
+async function loadStats() {
+
+    const response =
+        await fetch("/api/stats");
+
+    const data =
+        await response.json();
+
+    document.getElementById("total")
+        .innerText = data.total;
+
+    document.getElementById("available")
+        .innerText = data.available;
+
+    document.getElementById("booked")
+        .innerText = data.booked;
+}
+
+loadStats();
+
+</script>
 
 </body>
-
 </html>
