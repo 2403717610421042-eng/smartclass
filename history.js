@@ -1,26 +1,19 @@
 let bookings = [];
 
 
-// ==========================================
-// LOAD BOOKINGS
-// ==========================================
+// ================= LOAD =================
 
 async function loadBookings() {
 
     try {
 
         const response =
-            await fetch("/bookings");
-
+            await fetch("/api/bookings");
 
         bookings =
             await response.json();
 
-
-        displayBookings(
-            bookings
-        );
-
+        displayBookings(bookings);
 
     } catch (error) {
 
@@ -35,9 +28,7 @@ async function loadBookings() {
 }
 
 
-// ==========================================
-// DISPLAY BOOKINGS
-// ==========================================
+// ================= DISPLAY =================
 
 function displayBookings(data) {
 
@@ -46,24 +37,18 @@ function displayBookings(data) {
             "bookingTable"
         );
 
-
     table.innerHTML = "";
 
 
     if (data.length === 0) {
 
         table.innerHTML = `
-
             <tr>
-
-                <td
-                    colspan="6"
-                >
-                    No bookings found
+                <td colspan="6"
+                    style="text-align:center;padding:30px;">
+                    📭 No booking records found
                 </td>
-
             </tr>
-
         `;
 
         return;
@@ -73,40 +58,40 @@ function displayBookings(data) {
     data.forEach(booking => {
 
         const row =
-            document.createElement(
-                "tr"
-            );
+            document.createElement("tr");
 
 
-        const seatNumber =
+        const seat =
             booking.seats
-                ? booking.seats.seat_number
-                : "-";
+            ? booking.seats.seat_number
+            : "-";
 
 
         const date =
             new Date(
                 booking.booking_date
-            ).toLocaleString();
+            ).toLocaleString("en-IN");
 
 
-        const active =
-            booking.status === "Booked";
+        const statusClass =
+            booking.status === "Booked"
+            ? "booked"
+            : "cancelled";
 
 
         row.innerHTML = `
 
             <td>
-                ${booking.student_name}
+                👤 ${booking.student_name}
             </td>
 
             <td>
-                ${booking.student_email}
+                📧 ${booking.student_email}
             </td>
 
             <td>
                 <strong>
-                    ${seatNumber}
+                    💺 ${seat}
                 </strong>
             </td>
 
@@ -115,38 +100,31 @@ function displayBookings(data) {
             </td>
 
             <td>
-
-                <span
-                    class="${
-                        active
-                        ? "status-booked"
-                        : "status-available"
-                    }"
-                >
+                <span class="status ${statusClass}">
                     ${booking.status}
                 </span>
-
             </td>
 
             <td>
 
                 ${
-                    active
+                    booking.status === "Booked"
 
                     ?
 
-                    `<button
-                        class="reset-btn"
-                        onclick="cancelBooking(${booking.id})"
-                    >
+                    `
+                    <button
+                        class="btn btn-danger"
+                        onclick="cancelBooking(${booking.id})">
+
                         Cancel
-                    </button>`
+
+                    </button>
+                    `
 
                     :
 
-                    `<span>
-                        —
-                    </span>`
+                    "—"
                 }
 
             </td>
@@ -161,19 +139,13 @@ function displayBookings(data) {
 }
 
 
-// ==========================================
-// CANCEL BOOKING
-// ==========================================
+// ================= CANCEL =================
 
 async function cancelBooking(id) {
 
-    const confirmation =
-        confirm(
-            "Cancel this booking?"
-        );
-
-
-    if (!confirmation) {
+    if (!confirm(
+        "Are you sure you want to cancel this booking?"
+    )) {
         return;
     }
 
@@ -182,7 +154,7 @@ async function cancelBooking(id) {
 
         const response =
             await fetch(
-                `/cancel/${id}`,
+                `/api/cancel/${id}`,
                 {
                     method: "POST"
                 }
@@ -193,8 +165,18 @@ async function cancelBooking(id) {
             await response.json();
 
 
+        if (!response.ok) {
+
+            showToast(
+                result.message
+            );
+
+            return;
+        }
+
+
         showToast(
-            result.message
+            "✅ Booking cancelled"
         );
 
 
@@ -206,7 +188,7 @@ async function cancelBooking(id) {
         console.error(error);
 
         showToast(
-            "Unable to cancel booking"
+            "Server error"
         );
 
     }
@@ -214,14 +196,10 @@ async function cancelBooking(id) {
 }
 
 
-// ==========================================
-// SEARCH BOOKINGS
-// ==========================================
+// ================= SEARCH =================
 
 document
-    .getElementById(
-        "searchBooking"
-    )
+    .getElementById("searchBooking")
     .addEventListener(
         "input",
         searchBookings
@@ -230,11 +208,9 @@ document
 
 function searchBookings() {
 
-    const search =
+    const value =
         document
-            .getElementById(
-                "searchBooking"
-            )
+            .getElementById("searchBooking")
             .value
             .toLowerCase();
 
@@ -242,62 +218,55 @@ function searchBookings() {
     const filtered =
         bookings.filter(booking => {
 
-            return (
-
+            const name =
                 booking.student_name
-                    .toLowerCase()
-                    .includes(search)
+                    .toLowerCase();
 
-                ||
-
+            const email =
                 booking.student_email
-                    .toLowerCase()
-                    .includes(search)
+                    .toLowerCase();
 
+            const seat =
+                booking.seats
+                ? booking.seats
+                    .seat_number
+                    .toLowerCase()
+                : "";
+
+
+            return (
+                name.includes(value) ||
+                email.includes(value) ||
+                seat.includes(value)
             );
 
         });
 
 
-    displayBookings(
-        filtered
-    );
+    displayBookings(filtered);
 
 }
 
 
-// ==========================================
-// TOAST
-// ==========================================
+// ================= TOAST =================
 
 function showToast(message) {
 
     const toast =
-        document.getElementById(
-            "toast"
-        );
+        document.getElementById("toast");
 
+    toast.innerText = message;
 
-    toast.innerText =
-        message;
-
-
-    toast.style.display =
-        "block";
+    toast.style.display = "block";
 
 
     setTimeout(() => {
 
-        toast.style.display =
-            "none";
+        toast.style.display = "none";
 
     }, 3000);
 
 }
 
-
-// ==========================================
-// INITIAL LOAD
-// ==========================================
 
 loadBookings();
