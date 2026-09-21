@@ -1,79 +1,227 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Smart Classroom</title>
-    <link rel="stylesheet" href="style.css">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Admin Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
+
+
 <body>
 
-    <h1>🎓 Smart Classroom Seat Booking System</h1>
 
-    <h2>Admin Dashboard</h2>
+<header>
+
+    <div class="logo">
+        🎓 Smart Classroom
+    </div>
 
     <nav>
-        <a href="index.html">Student Page</a> |
-        <a href="admin.html">Admin Dashboard</a>
+
+        <a href="index.html">
+            Student
+        </a>
+
+        <a href="history.html">
+            Bookings
+        </a>
+
+        <a
+            href="admin.html"
+            class="active"
+        >
+            Admin
+        </a>
+
     </nav>
 
-    <br>
+</header>
 
-    <button onclick="loadSeats()">Refresh Seats</button>
 
-    <br><br>
+<main>
+
+
+<section class="hero">
+
+    <h1>
+        Admin Dashboard
+    </h1>
+
+    <p>
+        Manage classroom seats and bookings
+    </p>
+
+</section>
+
+
+<section class="stats">
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            💺
+        </div>
+
+        <h3>
+            Total Seats
+        </h3>
+
+        <span id="totalSeats">
+            0
+        </span>
+
+    </div>
+
+
+    <div class="stat-card available-card">
+
+        <div class="stat-icon">
+            🟩
+        </div>
+
+        <h3>
+            Available
+        </h3>
+
+        <span id="availableSeats">
+            0
+        </span>
+
+    </div>
+
+
+    <div class="stat-card booked-card">
+
+        <div class="stat-icon">
+            🟥
+        </div>
+
+        <h3>
+            Booked
+        </h3>
+
+        <span id="bookedSeats">
+            0
+        </span>
+
+    </div>
+
+</section>
+
+
+<section class="controls">
+
+    <input
+        type="text"
+        id="searchAdmin"
+        placeholder="🔍 Search seat"
+    >
+
+
+    <select id="adminFilter">
+
+        <option value="all">
+            All
+        </option>
+
+        <option value="Available">
+            Available
+        </option>
+
+        <option value="Booked">
+            Booked
+        </option>
+
+    </select>
+
+
+    <button onclick="loadAdminData()">
+        🔄 Refresh
+    </button>
+
+</section>
+
+
+<div style="text-align:center;">
+
+    <button
+        class="reset-all-btn"
+        onclick="resetAllSeats()"
+    >
+        ⚠ Reset All Seats
+    </button>
+
+</div>
+
+
+<section class="table-container">
 
     <table>
+
         <thead>
+
             <tr>
-                <th>Seat Number</th>
-                <th>Status</th>
-                <th>Action</th>
+
+                <th>
+                    ID
+                </th>
+
+                <th>
+                    Seat
+                </th>
+
+                <th>
+                    Status
+                </th>
+
+                <th>
+                    Action
+                </th>
+
             </tr>
+
         </thead>
 
+
         <tbody id="seatTable">
+
         </tbody>
+
     </table>
 
-    <script>
-        async function loadSeats() {
+</section>
 
-            const response = await fetch("/seats");
-            const seats = await response.json();
 
-            const table = document.getElementById("seatTable");
+<div id="toast"></div>
 
-            table.innerHTML = "";
 
-            seats.forEach(seat => {
+</main>
 
-                table.innerHTML += `
-                <tr>
-                    <td>${seat.seat_number}</td>
-                    <td>${seat.status}</td>
-                    <td>
-                        <button onclick="resetSeat(${seat.id})">
-                            Reset
-                        </button>
-                    </td>
-                </tr>`;
-            });
-        }
 
-        async function resetSeat(id) {
+<footer>
 
-            await fetch(`/reset/${id}`, {
-                method: "POST"
-            });
+    <p>
+        Admin Panel • Smart Classroom Seat Booking System
+    </p>
 
-            alert("Seat Reset Successfully");
+</footer>
 
-            loadSeats();
-        }
 
-        loadSeats();
-    </script>
+<script src="admin.js"></script>
 
 </body>
+
 </html>
