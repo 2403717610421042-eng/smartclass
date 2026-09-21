@@ -1,0 +1,32 @@
+<input
+    type="text"
+    id="searchBooking"
+    placeholder="🔍 Search by name, email or seat"
+>
+
+<button onclick="loadBookings()">
+    🔄 Refresh
+</button>
+
+<table>
+
+    <thead>
+
+        <tr>
+            <th>Student</th>
+            <th>Email</th>
+            <th>Seat</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+
+    </thead>
+
+    <tbody id="bookingTable"></tbody>
+
+</table>
+
+<div id="toast"></div>
+
+<script src="history.js"></script>
